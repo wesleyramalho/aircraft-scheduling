@@ -87,6 +87,7 @@ const BoxStyles = styled.div<BoxProps>`
               if (style && value) {
                 return `${toKebabCase(style)}: ${value};`;
               }
+              return null;
             })
             .join('')}
         }

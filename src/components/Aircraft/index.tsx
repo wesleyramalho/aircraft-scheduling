@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import A320 from "../../assets/A320.jpg";
 import useAirport from "../../hooks/useAirport/useAirport";
 import { AircraftType } from "../../types";

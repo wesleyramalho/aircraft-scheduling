@@ -20,7 +20,7 @@ const getTimeline = (items: FlightType[]): Array<[string, number, FlightType]> =
   const timeline: Array<[string, number, FlightType]> = [];
   for (let i = 0; i < items.length; i++) {
     const current = items[i];
-    const { departuretime, arrivaltime, readable_departure, readable_arrival, origin, destination, ident } = current;
+    const { departuretime, arrivaltime } = current;
     const scheduledValue: [string, number, FlightType] = [SCHEDULED_STATUS, getPercent(arrivaltime - departuretime), current];
     const idleBefore = (i === 0 ? getPercent(departuretime) : false);
     const idleAfter = (i === items.length - 1
