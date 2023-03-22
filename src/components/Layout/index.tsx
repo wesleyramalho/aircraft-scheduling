@@ -51,6 +51,20 @@ function SiteLayout() {
     );
   }, [flightsList, rotationList]);
 
+  const countDisabledFlights = () => {
+    let disabledNumber = 0;
+    for(let i = 0; i < rotationContentList.length; i++) {
+      const flight = rotationContentList[i];
+      const isDisabled = getPositionForFlight(rotationList, flight) === null
+      if(isDisabled) {
+        disabledNumber++;
+      }
+    }
+    return disabledNumber;
+  }
+  
+  const shouldShowAllSelectedMessage = rotationList?.length === (flightsList?.length - countDisabledFlights());
+
   useEffect(() => {
     const getAircraftsData = async () => {
       try {
@@ -137,6 +151,15 @@ function SiteLayout() {
     );
   }, [flightsList]);
 
+  const shouldBeAbleToRemoveFlightFromRotation = (rotationList: FlightType[], index: number) => {
+    // if it is the last item on the list, the remove button should appear on the ui
+    const isLastFlight = rotationList?.length === index + 1;
+    const isFirstFLight = index === 0;
+    if (isLastFlight || isFirstFLight) {
+      return true
+    }
+    return false;
+  }
   return (
     <>
       {/* there was something about not usage of local time, so I'm not going to get the next day using JS right here */}
@@ -171,14 +194,17 @@ function SiteLayout() {
             selectedAircraft={selectedAircraft}
             rotationList={rotationList}
           />
-          {rotationList.map((flight) => (
+          {rotationList.map((flight, index) => (
             <Card key={`rotation-${flight.ident}`}>
-              <Button
-                variant='danger'
-                onClick={() => onRemoveRotationItem(flight)}
-              >
-                remove
-              </Button>
+              {
+                shouldBeAbleToRemoveFlightFromRotation(rotationList, index) &&
+                <Button
+                  variant='danger'
+                  onClick={() => onRemoveRotationItem(flight)}
+                >
+                  remove
+                </Button>
+              }
               <Rotation
                 flight={flight}
               />
@@ -216,8 +242,22 @@ function SiteLayout() {
                 <Tab>Rotation recommendations: </Tab>
               </TabList>
               <TabPanel data-testid="flights-list">
+                {shouldShowAllSelectedMessage &&
+                  <Box
+                    breakpoints={{
+                      xs: {
+                        padding: '40px'
+                      }
+                    }}
+                  >
+                    <Paragraph>You've selected all flights. No more flights available :/ </Paragraph>
+                  </Box>
+                }
                 {rotationContentList.map((flight: FlightType) => {
                   const isDisabled = getPositionForFlight(rotationList, flight) === null
+                  if (isDisabled) {
+                    return null;
+                  }
                   return (
                     <FlightCard
                       disabled={isDisabled}
